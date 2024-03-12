@@ -6,10 +6,15 @@ from main import main
 def new_post():
     if request.method == 'POST':
         initial_message = request.json.get('initial_message')
-        # Asegúrate de tener acceso a main() desde aquí
-        post_content = main(initial_message)
-        res = save_new_post(post_content)
-        return res, 201
+        # If not initial_message is provided or shorter than 10 characters, return an error
+        if not initial_message or len(initial_message) < 10:
+            return jsonify({'message': 'Initial Message too short or not sent'}), 400
+        try:
+            post_content = main(initial_message)
+            res = save_new_post(post_content)
+            return res, 201
+        except ValueError as e:
+            return str(e), 400
 
 
 def get_post(post_id):
